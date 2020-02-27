@@ -1,4 +1,5 @@
 {
-    "show button": true,
-    "full html shortcut": "Ctrl+Alt+v"
+    "context_menu_entry": true,
+    "full html shortcut": "Ctrl+Alt+v",
+    "show button": false
 } 

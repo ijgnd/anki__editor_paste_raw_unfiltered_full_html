@@ -69,24 +69,34 @@ def myRawPaste(self):
     self.saveNow(lambda e=self, h=html, i=field: _myRawPaste(e, h, i))
 
 
+def keystr(k):
+    key = QKeySequence(k)
+    return key.toString(QKeySequence.NativeText)
+
+
+def editorContextMenu(ewv, menu):
+    e = ewv.editor
+    if gc("context_menu_entry", False):
+        a = menu.addAction("Paste full html ({})".format(keystr(gc("full html shortcut",""))))
+        a.triggered.connect(lambda _, ed=e: myRawPaste(e))
+addHook('EditorWebView.contextMenuEvent', editorContextMenu)
+
+
 if gc("show button"):
-    def keystr(k):
-        key = QKeySequence(k)
-        return key.toString(QKeySequence.NativeText)
     def setupEditorButtonsFilterFD(buttons, editor):
         b = editor.addButton(
             os.path.join(addon_path, "Octicons-diff-ignored.svg"),
             "paste_unfiltered_button",
             lambda e=editor: myRawPaste(e),
             tip="Paste unfiltered/full html ({})".format(keystr(gc("full html shortcut", ""))),
-            keys=gc("fullhtml_shortcut", "")
+            keys=gc("full html shortcut", "")
             )
         buttons.extend([b])
         return buttons
     addHook("setupEditorButtons", setupEditorButtonsFilterFD)
 else:
     def SetupShortcuts(cuts, editor):
-        fh = gc("fullhtml_shortcut")
+        fh = gc("full html shortcut")
         if fh:
-            cuts.append((fh, lambda e=editor: myRawPaste(e, False)))
+            cuts.append((fh, lambda e=editor: myRawPaste(e)))
     addHook("setupEditorShortcuts", SetupShortcuts)
