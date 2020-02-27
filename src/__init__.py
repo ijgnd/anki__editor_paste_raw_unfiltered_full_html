@@ -77,7 +77,7 @@ if gc("show button"):
         b = editor.addButton(
             os.path.join(addon_path, "Octicons-diff-ignored.svg"),
             "paste_unfiltered_button",
-            lambda e=editor: myRawPaste(e, False),
+            lambda e=editor: myRawPaste(e),
             tip="Paste unfiltered/full html ({})".format(keystr(gc("full html shortcut", ""))),
             keys=gc("fullhtml_shortcut", "")
             )
