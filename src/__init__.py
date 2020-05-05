@@ -36,7 +36,11 @@ from anki.utils import stripHTMLMedia
 
 from aqt import mw
 from aqt.editor import Editor
-from aqt.qt import *
+from aqt.qt import (
+    QClipboard,
+    QKeySequence,
+)
+from aqt.utils import tooltip
 
 
 addon_path = os.path.dirname(__file__)
@@ -59,14 +63,17 @@ def _myRawPaste(self, html, field):
 
 
 def myRawPaste(self):
-    field = self.currentField
+    focused_field_no = self.currentField
+    if not focused_field_no:
+        tooltip("Aborting. No field focused. Try using shortcuts. ...")
+        return
     mode = QClipboard.Clipboard
     mime = self.mw.app.clipboard().mimeData(mode=mode)
     html, internal = self.web._processMime(mime)
     if not html:
         return
     self.web.eval("""setFormat("insertText", "%s");""" % unique_string)
-    self.saveNow(lambda e=self, h=html, i=field: _myRawPaste(e, h, i))
+    self.saveNow(lambda e=self, h=html, i=focused_field_no: _myRawPaste(e, h, i))
 
 
 def keystr(k):
