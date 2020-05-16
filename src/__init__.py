@@ -54,7 +54,7 @@ def gc(arg, fail=False):
     return fail
 
 
-def _myRawPaste(self, html, field):
+def _unfilteredPaste(self, html, field):
     f = self.note.fields
     before, after = f[field].split(unique_string)
     f[field] = before + html + after
@@ -62,7 +62,7 @@ def _myRawPaste(self, html, field):
     self.loadNote(focusTo=field)
 
 
-def myRawPaste(self):
+def unfilteredPaste(self):
     focused_field_no = self.currentField
     if not isinstance(focused_field_no, int):
         tooltip("Aborting. No field focused. Try using shortcuts. ...")
@@ -75,8 +75,8 @@ def myRawPaste(self):
     html, _ = self.web._processMime(mime)
     if not html:
         return
-    self.web.eval("""setFormat("insertText", "%s");""" % unique_string)
-    self.saveNow(lambda e=self, h=html, i=focused_field_no: _myRawPaste(e, h, i))
+    self.web.eval("""setFormat("insertText", "%s");""" % unique_string)  # workaround to remember cursor position
+    self.saveNow(lambda e=self, h=html, i=focused_field_no: _unfilteredPaste(e, h, i))
 
 
 def keystr(k):
@@ -88,7 +88,7 @@ def editorContextMenu(ewv, menu):
     e = ewv.editor
     if gc("context_menu_entry", False):
         a = menu.addAction("Paste full html ({})".format(keystr(gc("full html shortcut",""))))
-        a.triggered.connect(lambda _, ed=e: myRawPaste(e))
+        a.triggered.connect(lambda _, ed=e: unfilteredPaste(e))
 addHook('EditorWebView.contextMenuEvent', editorContextMenu)
 
 
@@ -97,7 +97,7 @@ if gc("show button"):
         b = editor.addButton(
             os.path.join(addon_path, "Octicons-diff-ignored.svg"),
             "paste_unfiltered_button",
-            lambda e=editor: myRawPaste(e),
+            lambda e=editor: unfilteredPaste(e),
             tip="Paste unfiltered/full html ({})".format(keystr(gc("full html shortcut", ""))),
             keys=gc("full html shortcut", "")
             )
@@ -108,5 +108,5 @@ else:
     def SetupShortcuts(cuts, editor):
         fh = gc("full html shortcut")
         if fh:
-            cuts.append((fh, lambda e=editor: myRawPaste(e)))
+            cuts.append((fh, lambda e=editor: unfilteredPaste(e)))
     addHook("setupEditorShortcuts", SetupShortcuts)
