@@ -64,7 +64,7 @@ def _myRawPaste(self, html, field):
 
 def myRawPaste(self):
     focused_field_no = self.currentField
-    if not focused_field_no:
+    if not isinstance(focused_field_no, int):
         tooltip("Aborting. No field focused. Try using shortcuts. ...")
         return
     mode = QClipboard.Clipboard
