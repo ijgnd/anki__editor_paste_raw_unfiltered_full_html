@@ -69,7 +69,10 @@ def myRawPaste(self):
         return
     mode = QClipboard.Clipboard
     mime = self.mw.app.clipboard().mimeData(mode=mode)
-    html, internal = self.web._processMime(mime)
+    # Idea: maybe add option so that I can copy html source code from text editor and paste it into
+    # Anki as source code: But for vscode mime.hasHtml() and mime.hasText() is True, so I can't 
+    # rely on this to detect what comes from a text editor. Simpler: Clone and make different add-on.
+    html, _ = self.web._processMime(mime)
     if not html:
         return
     self.web.eval("""setFormat("insertText", "%s");""" % unique_string)
