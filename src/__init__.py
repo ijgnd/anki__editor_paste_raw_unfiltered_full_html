@@ -58,7 +58,8 @@ def _unfilteredPaste(self, html, field):
     f = self.note.fields
     before, after = f[field].split(unique_string)
     f[field] = before + html + after
-    self.note.flush()
+    if not self.addMode:
+        self.note.flush()
     self.loadNote(focusTo=field)
 
 
